@@ -12,7 +12,9 @@ export const SDSidebarFooter = () => {
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
-          <User2 />
+          <Button size="icon" variant="ghost">
+            <User2 />
+          </Button>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarFooter>
