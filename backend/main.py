@@ -1,6 +1,8 @@
-def main():
-    print("Hello from skinsenseai!")
+from fastapi import FastAPI
 
+from api.user import router as user_router
 
-if __name__ == "__main__":
-    main()
+app = FastAPI()
+app.include_router(
+    user_router, prefix="/users", tags=["Authentiction & User Management"]
+)
