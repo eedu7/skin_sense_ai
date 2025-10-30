@@ -33,9 +33,29 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
+  minio:
+    image: minio/minio:latest
+    container_name: skin_sense_minio
+    env_file:
+      - .env
+    ports:
+      - "${MINIO_PORT}:9000"   # S3 API
+      - "${MINIO_CONSOLE_PORT}:9001"  # Web console
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - skin_sense_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
 volumes:
   skin_sense_data:
   pgadmin_data:
+  minio_data:
 
 networks:
   skin_sense_network:

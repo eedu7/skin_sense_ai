@@ -1,4 +1,10 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,10 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -20,8 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -32,11 +32,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function SignInForm() {
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
+    resolver: zodResolver(loginSchema),
   });
 
   const isPending = form.formState.isSubmitting;
@@ -54,7 +54,7 @@ export default function SignInForm() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="email"
@@ -87,9 +87,9 @@ export default function SignInForm() {
               />
 
               <Button
-                type="submit"
                 className="cursor-pointer w-full"
                 disabled={isPending}
+                type="submit"
               >
                 Sign in
               </Button>
@@ -99,7 +99,7 @@ export default function SignInForm() {
         <CardFooter>
           <p>
             Don&apos; have an account?{" "}
-            <Link href="/sign-up" className="underline underline-offset-4">
+            <Link className="underline underline-offset-4" href="/sign-up">
               Sign Up
             </Link>
           </p>

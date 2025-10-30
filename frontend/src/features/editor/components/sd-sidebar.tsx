@@ -1,6 +1,5 @@
-import React from "react";
 import { SDSidebarHeader } from "./sd-sidebar-header";
-import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { SDSidebarFooter } from "./sd-sidebar-footer";
 
 export const SDSidebar = () => {
@@ -8,7 +7,9 @@ export const SDSidebar = () => {
     <Sidebar collapsible="icon">
       <SDSidebarHeader />
       <SidebarContent>
-        <SidebarGroup></SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Previous result</SidebarGroupLabel>
+        </SidebarGroup>
       </SidebarContent>
       <SDSidebarFooter />
     </Sidebar>

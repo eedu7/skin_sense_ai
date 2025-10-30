@@ -9,6 +9,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "bcrypt>=5.0.0",
     "fastapi[standard]>=0.119.1",
+    "minio>=7.2.18",
     "pydantic>=2.12.3",
     "pydantic-settings>=2.11.0",
     "sqlalchemy>=2.0.44",

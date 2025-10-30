@@ -1,4 +1,10 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,10 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -20,14 +22,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 const registerSchema = z
   .object({
+    confirmPassword: z.string().min(8).max(16),
     email: z.email(),
     password: z.string().min(8).max(16),
-    confirmPassword: z.string().min(8).max(16),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Password do not match",
@@ -38,12 +38,12 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function SignUpForm() {
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
     defaultValues: {
+      confirmPassword: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
+    resolver: zodResolver(registerSchema),
   });
 
   const isPending = form.formState.isSubmitting;
@@ -61,7 +61,7 @@ export default function SignUpForm() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="email"
@@ -111,9 +111,9 @@ export default function SignUpForm() {
               />
 
               <Button
-                type="submit"
                 className="cursor-pointer w-full"
                 disabled={isPending}
+                type="submit"
               >
                 Sign up
               </Button>
@@ -123,7 +123,7 @@ export default function SignUpForm() {
         <CardFooter>
           <p>
             Already have an account?{" "}
-            <Link href="/sign-in" className="underline underline-offset-4">
+            <Link className="underline underline-offset-4" href="/sign-in">
               Sign in
             </Link>
           </p>

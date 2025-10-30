@@ -8,11 +8,19 @@ ENV_FILE = BASE_PATH / ".env"
 
 
 class Config(BaseSettings):
+    # Database
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
     POSTGRES_PORT: int
     POSTGRES_DB_HOST: str = "localhost"
+
+    # MinIO
+    MINIO_ENDPOINT: str
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+    MINIO_BUCKET_NAME: str
+    MINIO_USE_SSL: bool = False
 
     @computed_field
     @property
@@ -33,6 +41,7 @@ class Config(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=True,
         env_ignore_empty=True,
+        extra="ignore",
     )
 
 

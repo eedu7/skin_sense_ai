@@ -1,5 +1,4 @@
-import { UploadPageView } from "@/features/skin-detection/view/upload-page-view";
-import React from "react";
+import { UploadPageView } from "@/features/editor/view/upload-page-view";
 
 export default function SDUploadPage() {
   return (
