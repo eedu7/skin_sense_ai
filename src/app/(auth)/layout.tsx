@@ -1,0 +1,27 @@
+import { supabaseServer } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import type React from "react";
+
+export default async function Layout({
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
+    const { data } = await supabaseServer.auth.getSession();
+
+    if (data) {
+        redirect("/scans");
+    }
+
+    return (
+        <div className="relative min-h-screen w-full overflow-hidden bg-background">
+            {/* Shared modern background decoration */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-3xl" />
+                <div className="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-3xl" />
+            </div>
+
+            <main className="relative z-10 flex min-h-screen items-center justify-center p-4">
+                {children}
+            </main>
+        </div>
+    );
+}
