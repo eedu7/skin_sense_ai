@@ -8,8 +8,7 @@ export default async function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
-    await requireAuth()
+    await requireAuth();
     return (
         <SidebarProvider defaultOpen={false}>
             <ScanSidebar />

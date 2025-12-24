@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import {
-    Image as ImageIcon,
-    Scan,
-    X,
-    Loader2,
-    UploadCloud,
-} from "lucide-react";
 import useScan from "@/hooks/use-scans";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Activity, Loader2, ShieldCheck } from "lucide-react"; // Added icons
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { AnalysisResults } from "./analysis-results";
+import { PreviewState } from "./preview-state";
+import { UploaderPlaceholder } from "./upload-placeholder";
 
 export const DropImage = () => {
     const [image, setImage] = useState<File | null>(null);
@@ -22,7 +19,6 @@ export const DropImage = () => {
     const isLocked = scanMutation.isSuccess;
     const isScanning = scanMutation.isPending;
 
-    // Cleanup the object URL to prevent memory leaks
     useEffect(() => {
         return () => {
             if (preview) URL.revokeObjectURL(preview);
@@ -30,21 +26,9 @@ export const DropImage = () => {
     }, [preview]);
 
     const handleFile = (file: File) => {
-        if (!file.type.startsWith("image/") || isLocked) return;
-
-        // Create new preview
-        const objectUrl = URL.createObjectURL(file);
+        if (!file?.type.startsWith("image/") || isLocked) return;
+        setPreview(URL.createObjectURL(file));
         setImage(file);
-        setPreview(objectUrl);
-    };
-
-    const onDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-        if (isLocked) return;
-
-        const file = e.dataTransfer.files?.[0];
-        if (file) handleFile(file);
     };
 
     const reset = (e: React.MouseEvent) => {
@@ -56,21 +40,49 @@ export const DropImage = () => {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto p-6">
+        <div className="w-full max-w-5xl mx-auto p-6 space-y-8">
+            {/* NEW HEADER SECTION */}
+            {!isLocked && (
+                <div className="text-center space-y-3">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                        Skin Condition Analyzer
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Upload a clear photo of the affected skin area. Our AI
+                        will analyze the characteristics and provide an
+                        easy-to-understand summary.
+                    </p>
+                    <div className="flex items-center justify-center gap-4 text-sm text-gray-500 pt-2">
+                        <span className="flex items-center gap-1">
+                            <ShieldCheck className="w-4 h-4 text-green-500" />{" "}
+                            Private & Secure
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <Activity className="w-4 h-4 text-blue-500" />{" "}
+                            Instant AI Analysis
+                        </span>
+                    </div>
+                </div>
+            )}
+
             <div
                 onDragOver={(e) => {
                     e.preventDefault();
                     setIsDragging(true);
                 }}
                 onDragLeave={() => setIsDragging(false)}
-                onDrop={onDrop}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    if (!isLocked) handleFile(e.dataTransfer.files?.[0]);
+                }}
                 onClick={() =>
                     !preview && !isLocked && inputRef.current?.click()
                 }
                 className={cn(
-                    "relative min-h-[400px] rounded-3xl transition-all duration-500 overflow-hidden border-2",
+                    "relative min-h-[450px] rounded-3xl transition-all duration-500 overflow-hidden border-2",
                     isLocked
-                        ? "bg-white border-gray-100 shadow-xl"
+                        ? "bg-white border-gray-100 shadow-2xl"
                         : "border-dashed",
                     isDragging
                         ? "border-blue-500 bg-blue-50/50 scale-[1.01]"
@@ -85,13 +97,9 @@ export const DropImage = () => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFile(file);
-                    }}
+                    onChange={(e) => handleFile(e.target.files?.[0]!)}
                 />
 
-                {/* --- UI CONTENT --- */}
                 <div
                     className={cn(
                         "h-full w-full transition-all duration-500",
@@ -100,121 +108,53 @@ export const DropImage = () => {
                             : "flex items-center justify-center",
                     )}
                 >
-                    {/* IMAGE SECTION */}
+                    {/* LEFT SIDE: Image / Placeholder */}
                     <div className="relative flex items-center justify-center p-6 min-h-[400px]">
                         {preview ? (
-                            <>
-                                <img
-                                    src={preview}
-                                    alt="Preview"
-                                    className={cn(
-                                        "rounded-2xl shadow-2xl transition-all duration-500 object-contain",
-                                        isLocked
-                                            ? "max-h-[300px] w-full"
-                                            : "max-h-[350px] w-auto",
-                                    )}
-                                />
-
-                                {/* Close Button (Only if not scanning/locked) */}
-                                {!isLocked && !isScanning && (
-                                    <button
-                                        onClick={reset}
-                                        className="absolute top-8 right-8 p-2 bg-white/80 backdrop-blur shadow-md rounded-full hover:bg-white transition-colors"
-                                    >
-                                        <X
-                                            size={18}
-                                            className="text-gray-600"
-                                        />
-                                    </button>
-                                )}
-
-                                {/* Scan Overlay (Appears when file is ready but not yet scanned) */}
-                                {!isLocked && !isScanning && (
-                                    <div className="absolute bottom-10 inset-x-0 flex justify-center">
-                                        <Button
-                                            size="lg"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                scanMutation.mutate(image!);
-                                            }}
-                                            className="rounded-full shadow-xl bg-blue-600 hover:bg-blue-700 px-8"
-                                        >
-                                            <Scan size={18} className="mr-2" />
-                                            Begin Analysis
-                                        </Button>
-                                    </div>
-                                )}
-                            </>
+                            <PreviewState
+                                preview={preview}
+                                isLocked={isLocked}
+                                onReset={reset}
+                                onScan={() => scanMutation.mutate(image!)}
+                            />
                         ) : (
-                            <div className="flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
-                                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
-                                    <UploadCloud size={32} />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    Upload Image
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Drag and drop or click to browse
-                                </p>
-                            </div>
+                            <UploaderPlaceholder />
                         )}
 
-                        {/* Scanning Loader Overlay */}
+                        {/* Loading Overlay */}
                         {isScanning && (
                             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
                                 <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
                                 <p className="text-sm font-medium text-blue-900">
-                                    Analyzing Image...
+                                    Our AI is analyzing your skin...
+                                </p>
+                                <p className="text-xs text-blue-700/70 mt-1">
+                                    Checking classification & generating report
                                 </p>
                             </div>
                         )}
                     </div>
 
-                    {/* RESULTS SECTION */}
+                    {/* RIGHT SIDE: Results */}
                     {isLocked && (
-                        <div className="p-8 md:p-12 bg-white border-l border-gray-50 flex flex-col justify-center animate-in slide-in-from-right-12 duration-500">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold mb-6 w-fit">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                ANALYSIS COMPLETE
-                            </div>
-
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                Scan Results
-                            </h2>
-                            <p className="text-gray-600 leading-relaxed mb-8">
-                                {scanMutation.data.message}
-                            </p>
-
-                            <div className="space-y-3 pt-6 border-t border-gray-100">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-400">
-                                        Filename
-                                    </span>
-                                    <span className="font-medium text-gray-900">
-                                        {scanMutation.data.imageName}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-400">Size</span>
-                                    <span className="font-medium text-gray-900">
-                                        {Math.round(
-                                            scanMutation.data.size / 1024,
-                                        )}{" "}
-                                        KB
-                                    </span>
-                                </div>
-                            </div>
-
-                            <Button
-                                variant="outline"
-                                onClick={reset}
-                                className="mt-10 rounded-xl"
-                            >
-                                Reset & Scan Another
-                            </Button>
-                        </div>
+                        <AnalysisResults
+                            data={scanMutation.data}
+                            onReset={reset}
+                        />
                     )}
                 </div>
+            </div>
+
+            {/* MEDICAL DISCLAIMER */}
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                <p className="text-xs text-amber-800 leading-relaxed text-center">
+                    <strong>Disclaimer:</strong> This tool uses artificial
+                    intelligence for educational purposes only. It is not a
+                    medical diagnosis. Always seek the advice of a qualified
+                    healthcare provider with any questions you may have
+                    regarding a medical condition. Never disregard professional
+                    medical advice because of something you have read here.
+                </p>
             </div>
         </div>
     );
