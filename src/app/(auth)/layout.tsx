@@ -1,16 +1,8 @@
-import { supabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import type React from "react";
 
-export default async function Layout({
+export default async function AuthLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
-    const { data } = await supabaseServer.auth.getSession();
-
-    if (data) {
-        redirect("/scans");
-    }
-
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-background">
             {/* Shared modern background decoration */}

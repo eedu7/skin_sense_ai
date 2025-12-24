@@ -1,6 +1,7 @@
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type AuthData = {
     email: string;
@@ -18,7 +19,11 @@ export function useSignUp() {
             });
         },
         onSuccess: () => {
+            toast.success("Signed up successfully");
             router.replace("/scans");
+        },
+        onError: () => {
+            toast.error("Error in signing up");
         },
     });
 }
@@ -35,7 +40,11 @@ export function useSignIn() {
             });
         },
         onSuccess: () => {
+            toast.success("Logged in successfully");
             router.replace("/scans");
+        },
+        onError: () => {
+            toast.error("Error in signing in");
         },
     });
 }
@@ -49,7 +58,12 @@ export function useSignOut() {
             return supabaseBrowser.auth.signOut();
         },
         onSuccess: () => {
+            toast.success("Logged out successfully");
+
             router.replace("/login");
+        },
+        onError: () => {
+            toast.error("Error in signing out");
         },
     });
 }
