@@ -4,12 +4,10 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CreditCardIcon } from "lucide-react";
 import { ScanSidebarContent } from "./scan-sidebar-content";
 import { ScanSidebarTrigger } from "./scan-sidebar-trigger";
+import { ScanUpgradeToPro } from "./scan-upgrade-to-pro";
 import { SidebarLogout } from "./sidebar-logout";
 
 export const ScanSidebar = () => {
@@ -25,12 +23,7 @@ export const ScanSidebar = () => {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton>
-                            <CreditCardIcon />
-                            Upgrade to Pro
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    <ScanUpgradeToPro />
                     <SidebarLogout />
                 </SidebarMenu>
             </SidebarFooter>
