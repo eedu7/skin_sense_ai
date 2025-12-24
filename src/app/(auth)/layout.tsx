@@ -1,8 +1,10 @@
+import { requireUnauth } from "@/lib/auth-utilts";
 import type React from "react";
 
 export default async function AuthLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
+     await requireUnauth()
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-background">
             {/* Shared modern background decoration */}

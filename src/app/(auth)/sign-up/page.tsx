@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
+    name: z.string().min(1, "Name is required"),
     email: z.email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
 });
@@ -39,7 +40,7 @@ export default function SignUpPage() {
 
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
-        defaultValues: { email: "", password: "" },
+        defaultValues: { name: "", email: "", password: "" },
     });
 
     const onSubmit = async (values: FormSchema) => {
@@ -62,6 +63,25 @@ export default function SignUpPage() {
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-5"
                     >
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                        Name 
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="name"
+                                            className="h-11 bg-muted/30"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="email"

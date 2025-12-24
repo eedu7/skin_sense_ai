@@ -1,29 +1,38 @@
-import { supabaseBrowser } from "@/lib/supabase/client";
+import { authClient } from "@/lib/auth-client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-type AuthData = {
+interface AuthData {
     email: string;
     password: string;
 };
 
+interface SignUp extends AuthData {
+    name: string;
+}
+
+
 export function useSignUp() {
     const router = useRouter();
+
     return useMutation({
         mutationKey: ["use-sign-up"],
-        mutationFn: (data: AuthData) => {
-            return supabaseBrowser.auth.signUp({
+        mutationFn: async (data: SignUp) => {
+            const { data: _data, error } = await authClient.signUp.email({
+                name: data.name,
                 email: data.email,
                 password: data.password,
             });
+            if (error) throw error;
+            return _data;
         },
         onSuccess: () => {
             toast.success("Signed up successfully");
             router.replace("/scans");
         },
-        onError: () => {
-            toast.error("Error in signing up");
+        onError: (error: any) => {
+            toast.error(error.message || "Error in signing up");
         },
     });
 }
@@ -33,18 +42,20 @@ export function useSignIn() {
 
     return useMutation({
         mutationKey: ["use-sign-in"],
-        mutationFn: (data: AuthData) => {
-            return supabaseBrowser.auth.signInWithPassword({
+        mutationFn: async (data: AuthData) => {
+            const { data: _data, error } = await authClient.signIn.email({
                 email: data.email,
                 password: data.password,
             });
+            if (error) throw error;
+            return _data;
         },
         onSuccess: () => {
             toast.success("Logged in successfully");
             router.replace("/scans");
         },
-        onError: () => {
-            toast.error("Error in signing in");
+        onError: (error: any) => {
+            toast.error(error.message || "Error in signing in");
         },
     });
 }
@@ -53,17 +64,17 @@ export function useSignOut() {
     const router = useRouter();
 
     return useMutation({
-        mutationKey: ["use-sign-up"],
-        mutationFn: () => {
-            return supabaseBrowser.auth.signOut();
+        mutationKey: ["use-sign-out"],
+        mutationFn: async () => {
+            const { error } = await authClient.signOut();
+            if (error) throw error;
         },
         onSuccess: () => {
             toast.success("Logged out successfully");
-
             router.replace("/login");
         },
-        onError: () => {
-            toast.error("Error in signing out");
+        onError: (error: any) => {
+            toast.error(error.message || "Error in signing out");
         },
     });
 }
