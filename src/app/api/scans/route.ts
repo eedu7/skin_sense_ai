@@ -110,6 +110,7 @@ export async function GET(req: NextRequest) {
         const data = await db.query.scanSummary.findMany({
             where: (scanSummary, { eq }) =>
                 eq(scanSummary.userId, session.user.id),
+            orderBy: (scanSummary, { desc }) => [desc(scanSummary.createdAt)],
         });
 
         return NextResponse.json({ data }, { status: 200 });
