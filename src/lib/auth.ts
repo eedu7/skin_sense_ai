@@ -29,8 +29,8 @@ export const auth = betterAuth({
                         "http://localhost:3000/scans",
                     authenticatedUsersOnly: true,
                 }),
+                portal(),
             ],
         }),
-        portal(),
     ],
 });

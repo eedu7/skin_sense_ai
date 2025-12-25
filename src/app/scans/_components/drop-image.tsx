@@ -1,6 +1,7 @@
 "use client";
 
-import useScan from "@/hooks/use-scans";
+import { useCreateScan } from "@/hooks/use-scans";
+import { useHasActiveSubscription } from "@/hooks/use-subscriptions";
 import { cn } from "@/lib/utils";
 import { Activity, Loader2, ShieldCheck } from "lucide-react"; // Added icons
 import type React from "react";
@@ -15,7 +16,8 @@ export const DropImage = () => {
     const [isDragging, setIsDragging] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const scanMutation = useScan();
+    const scanMutation = useCreateScan();
+    const { hasActiveSubscription } = useHasActiveSubscription();
     const isLocked = scanMutation.isSuccess;
     const isScanning = scanMutation.isPending;
 
@@ -115,7 +117,13 @@ export const DropImage = () => {
                                 preview={preview}
                                 isLocked={isLocked}
                                 onReset={reset}
-                                onScan={() => scanMutation.mutate(image!)}
+                                onScan={() =>
+                                    scanMutation.mutate({
+                                        image: image!,
+                                        hasActiveSubscription:
+                                            hasActiveSubscription ?? false,
+                                    })
+                                }
                             />
                         ) : (
                             <UploaderPlaceholder />

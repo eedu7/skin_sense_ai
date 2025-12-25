@@ -1,9 +1,31 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default function useScan() {
+// types/scan.ts
+export type ScanSummary = {
+  id: string;
+  summary: string;
+  imageUrl: string | null;
+  userId: string;
+  createdAt: string; // ISO string from NextResponse.json
+  updatedAt: string;
+};
+
+export type GetScansResponse = {
+  data: ScanSummary[];
+};
+
+export function useCreateScan() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["use-scan"],
-    mutationFn: async (image: File) => {
+    mutationFn: async ({
+      image,
+      hasActiveSubscription,
+    }: {
+      image: File;
+      hasActiveSubscription: boolean;
+    }) => {
       if (!image) throw new Error("No Image provided");
 
       const formData = new FormData();
@@ -12,6 +34,9 @@ export default function useScan() {
       const response = await fetch("/api/scans", {
         method: "POST",
         body: formData,
+        headers: {
+          "x-has-subscription": String(hasActiveSubscription),
+        },
       });
 
       if (!response.ok) {
@@ -20,6 +45,27 @@ export default function useScan() {
       }
 
       return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["use-get-scans"] });
+    },
+  });
+}
+
+export function useGetScans() {
+  return useQuery<GetScansResponse, Error>({
+    queryKey: ["use-get-scans"],
+    queryFn: async () => {
+      const response = await fetch("/api/scans", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to scan image");
+      }
+
+      return response.json() as Promise<GetScansResponse>;
     },
   });
 }
