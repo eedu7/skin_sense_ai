@@ -4,7 +4,11 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { ScanIcon } from "lucide-react";
+import Link from "next/link";
 import { ScanSidebarContent } from "./scan-sidebar-content";
 import { ScanSidebarTrigger } from "./scan-sidebar-trigger";
 import { ScanUpgradeToPro } from "./scan-upgrade-to-pro";
@@ -16,6 +20,14 @@ export const ScanSidebar = () => {
             <SidebarHeader>
                 <SidebarMenu>
                     <ScanSidebarTrigger />
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <Link href="/scans">
+                                <ScanIcon />
+                                New Scan
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
