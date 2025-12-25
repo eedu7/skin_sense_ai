@@ -1,5 +1,5 @@
 "use client";
-import { useSubscription } from "@/hooks/use-subscriptions";
+import { useGetScanById } from "@/hooks/use-scans";
 import { Loader2Icon } from "lucide-react";
 import { use } from "react";
 
@@ -9,10 +9,9 @@ interface Props {
 
 export default function Page({ params }: Props) {
     const { id: scanId } = use(params);
-    const { data, isLoading } = useSubscription();
+    const { data, isLoading } = useGetScanById(scanId);
     return (
         <div>
-            <p>{scanId}</p>
             {isLoading ? (
                 <Loader2Icon className="animate-spin" />
             ) : (

@@ -47,7 +47,7 @@ export const ScanSidebarContent = () => {
                                 <Link href={`/scans/${scan.id}`}>
                                     {/* Displaying a truncated summary or a date */}
                                     <span className="truncate">
-                                        {scan.summary ||
+                                        {scan.name ||
                                             `Scan ${new Date(scan.createdAt).toLocaleDateString()}`}
                                     </span>
                                 </Link>

@@ -5,6 +5,7 @@ import { hugging_client } from "@/lib/hugging_client";
 import { openrouter } from "@/lib/openrouter";
 import { supabaseServer } from "@/lib/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
+import { generateSlug } from "random-word-slugs";
 import { v4 as uuidv4 } from "uuid";
 
 const HF_INFERENCE_MODEL = process.env.HF_INFERENCE_MODEL;
@@ -67,8 +68,13 @@ export async function POST(req: NextRequest) {
                     .upload(fileName, image);
 
             if (uploadError) throw uploadError;
+            const slug = generateSlug(3, {
+                format: "title",
+            });
+
             await db.insert(scanSummary).values({
                 id: uuidv4(),
+                name: slug,
                 userId: session.user.id,
                 summary: messageText,
                 imageUrl: uploadData.path,

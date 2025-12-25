@@ -77,6 +77,7 @@ export const scanSummary = pgTable(
     "scan_summary",
     {
         id: text("id").primaryKey(),
+        name: text('name'),
         summary: text("summary").notNull(),
         imageUrl: text("image_url"),
         userId: text("user_id")

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export type ScanSummary = {
   id: string;
   summary: string;
+  name?: string | null;
   imageUrl: string | null;
   userId: string;
   createdAt: string; // ISO string from NextResponse.json
@@ -67,5 +68,24 @@ export function useGetScans() {
 
       return response.json() as Promise<GetScansResponse>;
     },
+  });
+}
+
+export function useGetScanById(id: string) {
+  return useQuery<ScanSummary, Error>({
+    queryKey: ["use-get-scan", id],
+    queryFn: async () => {
+      const response = await fetch(`/api/scans/${id}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch scan details");
+      }
+
+      return response.json();
+    },
+    enabled: !!id, // Only run if ID is provided
   });
 }
